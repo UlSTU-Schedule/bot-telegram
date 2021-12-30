@@ -79,17 +79,17 @@ type Messages struct {
 	InfoWithoutGroup  string `mapstructure:"info_without_group"`
 	InfoWithGroup     string `mapstructure:"info_with_group"`
 	AboutProject      string `mapstructure:"about_project"`
+	IncorrectInput    string `mapstructure:"incorrect_input"`
+	GroupNotSelected  string `mapstructure:"group_not_selected"`
 
 	// Additions
 	ChangesInKEISchedule string `mapstructure:"changes_in_kei_schedule"`
 
 	// Errors
-	IncorrectInput                string `mapstructure:"incorrect_input"`
-	GroupNotSelected              string `mapstructure:"group_not_selected"`
-	CurrWeekScheduleIsUnavailable string `mapstructure:"curr_week_schedule_is_unavailable"`
-	NextWeekScheduleIsUnavailable string `mapstructure:"next_week_schedule_is_unavailable"`
-	FailedToUpdateGroup           string `mapstructure:"failed_to_update_group"`
-	ServerError                   string `mapstructure:"server_error"`
+	ScheduleIsUnavailable string `mapstructure:"schedule_is_unavailable"`
+	ServerError           string `mapstructure:"server_error"`
+	IncorrectDateError    string `mapstructure:"incorrect_date_error"`
+	UnknownError          string `mapstructure:"unknown_error"`
 }
 
 // Stickers ...
@@ -99,8 +99,8 @@ type Stickers struct {
 	ToVoice            string `mapstructure:"to_voice"`
 }
 
-// Init ...
-func Init(configPath string) (*Config, error) {
+// New ...
+func New(configPath string) (*Config, error) {
 	cfg := &Config{}
 
 	viper.AddConfigPath(configPath)

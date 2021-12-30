@@ -3,33 +3,20 @@ package schedule
 import (
 	"fmt"
 	"github.com/ulstu-schedule/parser/schedule"
-	"log"
 	"regexp"
 	"strings"
 )
 
 var (
-	keiGroupPattern   = regexp.MustCompile(`^[А-Я]+[до]+[-0-9]+$`)
-	groupCharsPattern = regexp.MustCompile(`[А-Яа-я0-9-]+`)
+	KEIGroupPattern   = regexp.MustCompile(`^[А-Я]+[сдо]+-\d+$`)
+	groupCharsPattern = regexp.MustCompile(`(?i)[а-я\d-]+`)
 )
 
 func GetDailySchedule(userGroup string, userMsg string) (string, error) {
 	if userMsg == "3" || userMsg == "сегодня" {
-		dailySchedule, err := schedule.GetTextDailyGroupSchedule(userGroup, 0)
-		if err != nil {
-			log.Printf("Ошибка при получении расписания на сегодня: %v, %T", err, err)
-			return "", err
-		}
-
-		return dailySchedule, nil
+		return schedule.GetTextDailyGroupSchedule(userGroup, 0)
 	} else {
-		dailySchedule, err := schedule.GetTextDailyGroupSchedule(userGroup, 1)
-		if err != nil {
-			log.Printf("Ошибка при получении расписания на завтра: %v, %T", err, err)
-			return "", err
-		}
-
-		return dailySchedule, nil
+		return schedule.GetTextDailyGroupSchedule(userGroup, 1)
 	}
 }
 
@@ -49,7 +36,7 @@ func GetWeeklySchedule(groupName, userMsg string) (string, string, error) {
 			return "", "", err
 		}
 
-		caption := fmt.Sprintf("Расписание %s на следующую неделю\U0001F446", groupName)
+		caption := fmt.Sprintf("Расписание %s на следующую неделю\U0001F446\n\n", groupName)
 
 		return caption, weeklySchedule, nil
 	}
@@ -111,5 +98,5 @@ func deleteExcessSymbols(s string) string {
 }
 
 func IsGroupFromKEI(groupName string) bool {
-	return keiGroupPattern.MatchString(groupName) && !strings.Contains(groupName, "РОНд")
+	return KEIGroupPattern.MatchString(groupName) && !strings.Contains(groupName, "РОНд")
 }

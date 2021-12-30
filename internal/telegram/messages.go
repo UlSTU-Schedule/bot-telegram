@@ -11,7 +11,7 @@ import (
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	switch message.Command() {
-	case b.commands.AboutProject:
+	case b.commands.WithSlash.AboutProject:
 		return b.handleAboutProjectCommand(message)
 	case b.commands.WithSlash.Help:
 		return b.handleHelpCommand(message)
@@ -23,10 +23,8 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
-	student, err := b.repos.GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
 	if err != nil {
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.ServerError)
-		_, _ = b.bot.Send(ansMsg)
 		return err
 	}
 
@@ -55,10 +53,8 @@ func (b *Bot) handleAboutProjectCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleHelpCommand(message *tgbotapi.Message) error {
-	student, err := b.repos.GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
 	if err != nil {
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.ServerError)
-		_, _ = b.bot.Send(ansMsg)
 		return err
 	}
 
@@ -87,17 +83,21 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 	userMsg := message.Text
 
 	switch {
-	case isUserMsgAmongCommands(userMsg, b.commands.GetScheduleForDay):
+	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GetScheduleForDay):
 		return b.handleGetScheduleForDayMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GetScheduleForWeek) || findCommandsAmongUserMsg(userMsg, b.commands.Partial.GetScheduleForWeek):
+	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GetScheduleForWeek) ||
+		findCommandsAmongUserMsg(userMsg, b.commands.Partial.GetScheduleForWeek):
 		return b.handleGetScheduleForWeekMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.ChangeGroup) || findCommandsAmongUserMsg(userMsg, b.commands.Partial.ChangeGroup):
+	case isUserMsgAmongCommands(userMsg, b.commands.Whole.ChangeGroup) ||
+		findCommandsAmongUserMsg(userMsg, b.commands.Partial.ChangeGroup):
 		return b.handleChangeGroupMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.BackToStartMenu) || findCommandsAmongUserMsg(userMsg, b.commands.Partial.BackToStartMenu):
+	case isUserMsgAmongCommands(userMsg, b.commands.Whole.BackToStartMenu) ||
+		findCommandsAmongUserMsg(userMsg, b.commands.Partial.BackToStartMenu):
 		return b.handleBackToStartMenuMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GoToScheduleMenu) || findCommandsAmongUserMsg(userMsg, b.commands.Partial.GoToScheduleMenu):
+	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GoToScheduleMenu) ||
+		findCommandsAmongUserMsg(userMsg, b.commands.Partial.GoToScheduleMenu):
 		return b.handleGoToScheduleMenuMsg(message)
-	case findCommandsAmongUserMsg(userMsg, b.commands.ExpressGratitude):
+	case findCommandsAmongUserMsg(userMsg, b.commands.Partial.ExpressGratitude):
 		return b.handleExpressGratitudeMsg(message)
 	default:
 		return b.handleUnknownMsg(message)
@@ -114,10 +114,8 @@ func (b *Bot) handleChangeGroupMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
-	student, err := b.repos.GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
 	if err != nil {
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.ServerError)
-		_, _ = b.bot.Send(ansMsg)
 		return err
 	}
 
@@ -146,10 +144,8 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
-	student, err := b.repos.GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
 	if err != nil {
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.ServerError)
-		_, _ = b.bot.Send(ansMsg)
 		return err
 	}
 
@@ -189,10 +185,8 @@ func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleBackToStartMenuMsg(message *tgbotapi.Message) error {
-	student, err := b.repos.GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
 	if err != nil {
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.ServerError)
-		_, _ = b.bot.Send(ansMsg)
 		return err
 	}
 
@@ -213,10 +207,8 @@ func (b *Bot) handleBackToStartMenuMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
-	student, err := b.repos.GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
 	if err != nil {
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.ServerError)
-		_, _ = b.bot.Send(ansMsg)
 		return err
 	}
 
@@ -241,22 +233,14 @@ func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
 func (b *Bot) handleUnknownMsg(message *tgbotapi.Message) error {
 	isUserInputGroup, formattedGroupName, err := schedule.IsGroupExist(message.Text)
 	if err != nil {
-		ansText := b.messages.ServerError
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-
-		_, err = b.bot.Send(ansMsg)
 		return err
 	}
 
 	if isUserInputGroup {
 		facultyID := b.determineFacultyID(formattedGroupName)
 
-		err = b.repos.Information(message.From.FirstName, message.From.LastName, int(message.From.ID), formattedGroupName, facultyID)
+		err = b.studentStore.Student().Information(message.From.FirstName, message.From.LastName, int(message.From.ID), formattedGroupName, facultyID)
 		if err != nil {
-			ansText := b.messages.FailedToUpdateGroup
-			ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-
-			_, err = b.bot.Send(ansMsg)
 			return err
 		}
 
@@ -294,23 +278,18 @@ func (b *Bot) handleVoice(message *tgbotapi.Message) error {
 	return err
 }
 
-func (b *Bot) handleError() {
-	// TODO: всю обработку ошибок перенести в этот метод
-}
-
 // determineFacultyID ...
 func (b *Bot) determineFacultyID(groupName string) byte {
 	for _, faculty := range b.faculties {
 		for _, group := range faculty.Groups {
-			expr := fmt.Sprintf(`(?i)^%s[0-9]+$`, group)
-			groupRegexp, _ := regexp.Compile(expr)
+			expr := fmt.Sprintf(`(?i)^%s[\d]+$`, group)
+			groupRegexp := regexp.MustCompile(expr)
 			if groupRegexp.MatchString(groupName) {
 				return faculty.ID
 			}
 		}
 	}
-	keiRegexp, _ := regexp.Compile(`(?i)^[А-Я]+[до]+[-0-9]+$`)
-	if keiRegexp.MatchString(groupName) {
+	if schedule.KEIGroupPattern.MatchString(groupName) {
 		return 2
 	}
 	return 12
@@ -319,7 +298,7 @@ func (b *Bot) determineFacultyID(groupName string) byte {
 // findCommandsAmongUserMsg ...
 func findCommandsAmongUserMsg(userMsg string, commands []string) bool {
 	expr := fmt.Sprintf(`(?i)(%s)`, strings.Join(commands, "|"))
-	amongRegexp, _ := regexp.Compile(expr)
+	amongRegexp := regexp.MustCompile(expr)
 	return amongRegexp.MatchString(userMsg)
 }
 

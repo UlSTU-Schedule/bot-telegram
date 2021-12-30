@@ -4,22 +4,24 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/ulstu-schedule/bot-telegram/internal/config"
 	"github.com/ulstu-schedule/bot-telegram/internal/store/postgres"
+	"github.com/ulstu-schedule/parser/types"
 	"log"
 )
 
 // Bot ...
 type Bot struct {
-	bot       *tgbotapi.BotAPI
-	stickers  config.Stickers
-	messages  config.Messages
-	commands  config.Commands
-	repos     *postgres.StudentRepository
-	faculties []config.Faculty
+	bot           *tgbotapi.BotAPI
+	stickers      config.Stickers
+	messages      config.Messages
+	commands      config.Commands
+	studentStore  *postgres.StudentStore
+	scheduleStore *postgres.ScheduleStore
+	faculties     []config.Faculty
 }
 
 // NewBot ...
-func NewBot(api *tgbotapi.BotAPI, stickers config.Stickers, messages config.Messages, commands config.Commands, repos *postgres.StudentRepository, faculties []config.Faculty) *Bot {
-	return &Bot{bot: api, stickers: stickers, messages: messages, commands: commands, repos: repos, faculties: faculties}
+func NewBot(api *tgbotapi.BotAPI, stickers config.Stickers, messages config.Messages, commands config.Commands, studentStore *postgres.StudentStore, scheduleStore *postgres.ScheduleStore, faculties []config.Faculty) *Bot {
+	return &Bot{bot: api, stickers: stickers, messages: messages, commands: commands, studentStore: studentStore, scheduleStore: scheduleStore, faculties: faculties}
 }
 
 // Start ...
@@ -36,48 +38,10 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			continue
 		}
 
-		if update.Message.IsCommand() {
-			go func(update tgbotapi.Update) {
-				log.Printf("[TG] @%s: %s", update.Message.From.UserName, update.Message.Text)
-
-				err := b.handleCommand(update.Message)
-				if err != nil {
-					log.Printf("[TG] ERROR: %s", err)
-				}
-			}(update)
-			continue
-		}
-
-		if update.Message.Sticker != nil {
-			go func(update tgbotapi.Update) {
-				log.Printf("[TG] @%s: %s", update.Message.From.UserName, "sticker")
-
-				err := b.handleSticker(update.Message)
-				if err != nil {
-					log.Printf("[TG] ERROR: %s", err)
-				}
-			}(update)
-			continue
-		}
-
-		if update.Message.Voice != nil {
-			go func(update tgbotapi.Update) {
-				log.Printf("[TG] @%s: %s", update.Message.From.UserName, "voice")
-
-				err := b.handleVoice(update.Message)
-				if err != nil {
-					log.Printf("[TG] ERROR: %s", err)
-				}
-			}(update)
-			continue
-		}
-
 		go func(update tgbotapi.Update) {
-			log.Printf("[TG] @%s: %s", update.Message.From.UserName, update.Message.Text)
-
-			err := b.handleMessage(update.Message)
+			err := b.handleMessageUpdate(&update)
 			if err != nil {
-				log.Printf("[TG] ERROR: %s", err)
+				b.handleError(&update, err)
 			}
 		}(update)
 	}
@@ -88,4 +52,40 @@ func (b *Bot) initUpdatesChannel() tgbotapi.UpdatesChannel {
 	u.Timeout = 60
 
 	return b.bot.GetUpdatesChan(u)
+}
+
+func (b *Bot) handleMessageUpdate(update *tgbotapi.Update) error {
+	if update.Message.Sticker != nil {
+		return b.handleSticker(update.Message)
+	}
+
+	if update.Message.Voice != nil {
+		return b.handleVoice(update.Message)
+	}
+
+	if update.Message.IsCommand() {
+		return b.handleCommand(update.Message)
+	}
+
+	return b.handleMessage(update.Message)
+}
+
+func (b *Bot) handleError(update *tgbotapi.Update, err error) {
+	log.Printf("[TG] @%s: %s", update.Message.From.UserName, update.Message.Text)
+	log.Printf("[TG] ERROR: %s", err)
+
+	switch err.(type) {
+	case *types.UnavailableScheduleError, *types.LinkPointsToIncorrectObjectError:
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, b.messages.ScheduleIsUnavailable)
+		_, _ = b.bot.Send(msg)
+	case *types.StatusCodeError:
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, b.messages.ServerError)
+		_, _ = b.bot.Send(msg)
+	case *types.IncorrectDateError:
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, b.messages.IncorrectDateError)
+		_, _ = b.bot.Send(msg)
+	default:
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, b.messages.UnknownError)
+		_, _ = b.bot.Send(msg)
+	}
 }

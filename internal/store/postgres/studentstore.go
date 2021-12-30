@@ -5,16 +5,27 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// NewStudentDB ...
-func NewStudentDB(databaseUrl string) (*sqlx.DB, error) {
-	db, err := sqlx.Open("pgx", databaseUrl)
-	if err != nil {
-		return nil, err
+// TODO: var _ store.StudentStore = (*StudentStore)(nil)
+
+type StudentStore struct {
+	db                *sqlx.DB
+	studentRepository *StudentRepository
+}
+
+func NewStudentStore(db *sqlx.DB) *StudentStore {
+	return &StudentStore{
+		db: db,
+	}
+}
+
+func (s *StudentStore) Student() *StudentRepository {
+	if s.studentRepository != nil {
+		return s.studentRepository
 	}
 
-	if err = db.Ping(); err != nil {
-		return nil, err
+	s.studentRepository = &StudentRepository{
+		store: s,
 	}
 
-	return db, nil
+	return s.studentRepository
 }
