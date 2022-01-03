@@ -1,4 +1,4 @@
-FROM golang:1.16.7-alpine AS builder
+FROM golang:1.17.5-alpine AS builder
 
 WORKDIR /github.com/ulstu-schedule/bot-telegram/
 

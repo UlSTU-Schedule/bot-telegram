@@ -12,9 +12,7 @@ const (
 	facultiesJSONPath  = "configs/faculties.json"
 )
 
-// Config ...
 type Config struct {
-	// environment variables
 	Token               string
 	StudentDatabaseURL  string
 	ScheduleDatabaseURL string
@@ -25,19 +23,19 @@ type Config struct {
 	Faculties []Faculty
 }
 
-// Commands ...
+// Commands represents the bot commands.
 type Commands struct {
 	WithoutSlash
 	WithSlash
 }
 
-// WithoutSlash ...
+// WithoutSlash represents commands that do not start with a slash character.
 type WithoutSlash struct {
-	Whole   // команда должна быть такой же, как и весь текст сообщения (msg='завтра', cmd='завтра')
-	Partial // команда может быть среди слов в сообщении (msg='можно моё расписание?', cmd='расписание')
+	Whole
+	Partial
 }
 
-// Whole ...
+// Whole represents commands, which should be a whole message (е.g. msg='завтра', cmd='завтра').
 type Whole struct {
 	GoToScheduleMenu   []string `mapstructure:"go_to_schedule_menu"`
 	ChangeGroup        []string `mapstructure:"change_group"`
@@ -46,7 +44,7 @@ type Whole struct {
 	BackToStartMenu    []string `mapstructure:"back_to_start_menu"`
 }
 
-// Partial ...
+// Partial represents commands that can be inside a message (msg='можно моё расписание?', cmd='расписание').
 type Partial struct {
 	GoToScheduleMenu   []string `mapstructure:"go_to_schedule_menu"`
 	GetScheduleForWeek []string `mapstructure:"get_schedule_for_week"`
@@ -55,23 +53,22 @@ type Partial struct {
 	ExpressGratitude   []string `mapstructure:"express_gratitude"`
 }
 
-// WithSlash ...
+// WithSlash represents commands that start with a slash character.
 type WithSlash struct {
 	Start        string `mapstructure:"start"`
 	Help         string `mapstructure:"help"`
 	AboutProject string `mapstructure:"about_project"`
 }
 
-// Faculty ...
+// Faculty represents UlSTU faculty.
 type Faculty struct {
 	Name   string
 	ID     byte
 	Groups []string
 }
 
-// Messages ...
+// Messages represents the messages that the bot sends to the user: regular, additional, and error.
 type Messages struct {
-	// Answers
 	StartWithGroup    string `mapstructure:"start_with_group"`
 	StartWithoutGroup string `mapstructure:"start_without_group"`
 	ChangeGroup       string `mapstructure:"change_group"`
@@ -82,24 +79,21 @@ type Messages struct {
 	IncorrectInput    string `mapstructure:"incorrect_input"`
 	GroupNotSelected  string `mapstructure:"group_not_selected"`
 
-	// Additions
 	ChangesInKEISchedule string `mapstructure:"changes_in_kei_schedule"`
 
-	// Errors
 	ScheduleIsUnavailable string `mapstructure:"schedule_is_unavailable"`
 	ServerError           string `mapstructure:"server_error"`
 	IncorrectDateError    string `mapstructure:"incorrect_date_error"`
 	UnknownError          string `mapstructure:"unknown_error"`
 }
 
-// Stickers ...
+// Stickers represents the sticker codes that the bot sends.
 type Stickers struct {
 	ToExpressGratitude string `mapstructure:"to_express_gratitude"`
 	ToSticker          string `mapstructure:"to_sticker"`
 	ToVoice            string `mapstructure:"to_voice"`
 }
 
-// New ...
 func New(configPath string) (*Config, error) {
 	cfg := &Config{}
 
