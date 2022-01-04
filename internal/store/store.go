@@ -1,16 +1,16 @@
 package store
 
-// ScheduleStore ...
+// ScheduleStore represents a database with backups of schedules.
 type ScheduleStore interface {
-	// GroupSchedule ...
+	// GroupSchedule represents a database table with backups of group schedules.
 	GroupSchedule() *GroupScheduleRepository
 
-	// TeacherSchedule ...
+	// TeacherSchedule represents a database table with backups of teacher schedules.
 	TeacherSchedule() *TeacherScheduleRepository
 }
 
-// StudentStore ...
+// StudentStore represents a database with bot users in Telegram.
 type StudentStore interface {
-	// Student ...
+	// Student represents a table in the database with users.
 	Student() *StudentRepository
 }

@@ -19,12 +19,10 @@ type Bot struct {
 	faculties     []config.Faculty
 }
 
-// NewBot ...
 func NewBot(api *tgbotapi.BotAPI, stickers config.Stickers, messages config.Messages, commands config.Commands, studentStore *postgres.StudentStore, scheduleStore *postgres.ScheduleStore, faculties []config.Faculty) *Bot {
 	return &Bot{bot: api, stickers: stickers, messages: messages, commands: commands, studentStore: studentStore, scheduleStore: scheduleStore, faculties: faculties}
 }
 
-// Start ...
 func (b *Bot) Start() {
 	log.Println("The Telegram bot was launched!")
 
@@ -34,7 +32,7 @@ func (b *Bot) Start() {
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	for update := range updates {
-		if update.Message == nil { // игнорирует обновления, не связанные с сообщениями
+		if update.Message == nil { // ignores non-messages updates
 			continue
 		}
 
@@ -67,7 +65,7 @@ func (b *Bot) handleMessageUpdate(update *tgbotapi.Update) error {
 		return b.handleCommand(update.Message)
 	}
 
-	return b.handleMessage(update.Message)
+	return b.handleMsg(update.Message)
 }
 
 func (b *Bot) handleError(update *tgbotapi.Update, err error) {
@@ -75,7 +73,7 @@ func (b *Bot) handleError(update *tgbotapi.Update, err error) {
 	log.Printf("[TG] ERROR: %s", err)
 
 	switch err.(type) {
-	case *types.UnavailableScheduleError, *types.LinkPointsToIncorrectObjectError:
+	case *types.UnavailableScheduleError, *types.IncorrectLinkError:
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, b.messages.ScheduleIsUnavailable)
 		_, _ = b.bot.Send(msg)
 	case *types.StatusCodeError:

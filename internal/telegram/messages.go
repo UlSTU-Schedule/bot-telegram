@@ -79,25 +79,25 @@ func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {
 	return err
 }
 
-func (b *Bot) handleMessage(message *tgbotapi.Message) error {
-	userMsg := message.Text
+func (b *Bot) handleMsg(message *tgbotapi.Message) error {
+	userMsgLower := strings.ToLower(message.Text)
 
 	switch {
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GetScheduleForDay):
+	case contains(b.commands.Whole.GetScheduleForDay, userMsgLower):
 		return b.handleGetScheduleForDayMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GetScheduleForWeek) ||
-		findCommandsAmongUserMsg(userMsg, b.commands.Partial.GetScheduleForWeek):
+	case contains(b.commands.Whole.GetScheduleForWeek, userMsgLower) ||
+		containsPartial(b.commands.Partial.GetScheduleForWeek, userMsgLower):
 		return b.handleGetScheduleForWeekMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.ChangeGroup) ||
-		findCommandsAmongUserMsg(userMsg, b.commands.Partial.ChangeGroup):
+	case contains(b.commands.Whole.ChangeGroup, userMsgLower) ||
+		containsPartial(b.commands.Partial.ChangeGroup, userMsgLower):
 		return b.handleChangeGroupMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.BackToStartMenu) ||
-		findCommandsAmongUserMsg(userMsg, b.commands.Partial.BackToStartMenu):
+	case contains(b.commands.Whole.BackToStartMenu, userMsgLower) ||
+		containsPartial(b.commands.Partial.BackToStartMenu, userMsgLower):
 		return b.handleBackToStartMenuMsg(message)
-	case isUserMsgAmongCommands(userMsg, b.commands.Whole.GoToScheduleMenu) ||
-		findCommandsAmongUserMsg(userMsg, b.commands.Partial.GoToScheduleMenu):
+	case contains(b.commands.Whole.GoToScheduleMenu, userMsgLower) ||
+		containsPartial(b.commands.Partial.GoToScheduleMenu, userMsgLower):
 		return b.handleGoToScheduleMenuMsg(message)
-	case findCommandsAmongUserMsg(userMsg, b.commands.Partial.ExpressGratitude):
+	case containsPartial(b.commands.Partial.ExpressGratitude, userMsgLower):
 		return b.handleExpressGratitudeMsg(message)
 	default:
 		return b.handleUnknownMsg(message)
@@ -120,22 +120,33 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 	}
 
 	if student != nil {
-		dailySchedule, err := schedule.GetDailySchedule(student.GroupName, strings.ToLower(message.Text))
+		loweredUserMsg := strings.ToLower(message.Text)
+
+		daySchedule, err := schedule.GetDayGroupSchedule(student.GroupName, loweredUserMsg)
 		if err != nil {
-			return err
+			groupScheduleJSON, err := b.scheduleStore.GroupSchedule().GetSchedule(student.GroupName)
+			if err != nil {
+				return err
+			}
+
+			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04:05 02.01.2006")
+
+			daySchedule, err = schedule.ParseDayGroupSchedule(groupScheduleJSON.Info, updateTimeFmt, student.GroupName, loweredUserMsg)
+			if err != nil {
+				return err
+			}
 		}
 
-		ansText := dailySchedule
-		if schedule.IsGroupFromKEI(student.GroupName) {
-			ansText += b.messages.ChangesInKEISchedule
+		if schedule.IsKEIGroup(student.GroupName) {
+			daySchedule += b.messages.ChangesInKEISchedule
 		}
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
+
+		ansMsg := tgbotapi.NewMessage(message.Chat.ID, daySchedule)
 		ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	} else {
-		ansText := b.messages.GroupNotSelected
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
+		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.GroupNotSelected)
 		ansMsg.ReplyMarkup = getEmptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
@@ -150,33 +161,40 @@ func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
 	}
 
 	if student != nil {
-		msg := tgbotapi.NewMessage(message.Chat.ID, "Генерирую расписание \U0000231B")
-		_, _ = b.bot.Send(msg)
+		ansMsg := tgbotapi.NewMessage(message.Chat.ID, "Генерирую расписание \U0000231B")
+		_, _ = b.bot.Send(ansMsg)
 
-		userMsgLower := strings.ToLower(message.Text)
+		loweredUserMsg := strings.ToLower(message.Text)
 
-		caption, weeklySchedulePath, err := schedule.GetWeeklySchedule(student.GroupName, userMsgLower)
-		if weeklySchedulePath != "" {
-			defer os.Remove(weeklySchedulePath)
-		}
+		caption, weekSchedulePath, err := schedule.GetWeekGroupSchedule(student.GroupName, loweredUserMsg)
 		if err != nil {
-			return err
+			groupScheduleJSON, err := b.scheduleStore.GroupSchedule().GetSchedule(student.GroupName)
+			if err != nil {
+				return err
+			}
+
+			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04:05 02.01.2006")
+
+			caption, weekSchedulePath, err = schedule.ParseWeekGroupSchedule(groupScheduleJSON.Info, updateTimeFmt, student.GroupName, loweredUserMsg)
+			if err != nil {
+				return err
+			}
+		}
+		if weekSchedulePath != "" {
+			defer os.Remove(weekSchedulePath)
 		}
 
-		imgMsg := tgbotapi.NewPhoto(message.Chat.ID, tgbotapi.FilePath(weeklySchedulePath))
+		imgMsg := tgbotapi.NewPhoto(message.Chat.ID, tgbotapi.FilePath(weekSchedulePath))
 		imgMsg.Caption = caption
-		if userMsgLower == "5" || userMsgLower == "текущая неделя" {
-			if schedule.IsGroupFromKEI(student.GroupName) {
-				imgMsg.Caption += b.messages.ChangesInKEISchedule
-			}
+		if (loweredUserMsg == "5" || loweredUserMsg == "текущая неделя") && schedule.IsKEIGroup(student.GroupName) {
+			imgMsg.Caption += b.messages.ChangesInKEISchedule
 		}
 		imgMsg.ReplyMarkup = getScheduleMenuKeyboard()
 
 		_, err = b.bot.Send(imgMsg)
 		return err
 	} else {
-		ansText := b.messages.GroupNotSelected
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
+		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.GroupNotSelected)
 		ansMsg.ReplyMarkup = getEmptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
@@ -213,7 +231,7 @@ func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
 	}
 
 	if student != nil {
-		ansText := fmt.Sprintf("Твоя группа: %s \U0001F4CC \n\n", student.GroupName)
+		ansText := fmt.Sprintf("Твоя группа: %s \U0001F4CC\n\n", student.GroupName)
 		ansText += b.messages.InfoWithGroup
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
 		ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
@@ -231,32 +249,40 @@ func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleUnknownMsg(message *tgbotapi.Message) error {
-	isUserInputGroup, formattedGroupName, err := schedule.IsGroupExist(message.Text)
-	if err != nil {
-		return err
-	}
-
-	if isUserInputGroup {
-		facultyID := b.determineFacultyID(formattedGroupName)
-
-		err = b.studentStore.Student().Information(message.From.FirstName, message.From.LastName, int(message.From.ID), formattedGroupName, facultyID)
+	if isGroup, groupName := schedule.IsGroupParser(message.Text); isGroup {
+		return b.updateGroup(message.From.FirstName, message.From.LastName, message.From.ID, message.Chat.ID, groupName)
+	} else {
+		groups, err := b.scheduleStore.GroupSchedule().GetGroups()
 		if err != nil {
 			return err
 		}
 
-		ansText := fmt.Sprintf("Твоя группа обновлена на %s \U00002705\n\n", formattedGroupName)
-		ansText += b.messages.InfoWithGroup
+		if isGroup, groupName = schedule.IsGroupReserver(groups, message.Text); isGroup {
+			return b.updateGroup(message.From.FirstName, message.From.LastName, message.From.ID, message.Chat.ID, groupName)
+		} else {
+			ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.IncorrectInput)
 
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
-
-		_, err = b.bot.Send(ansMsg)
-	} else {
-		ansText := b.messages.IncorrectInput
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-
-		_, err = b.bot.Send(ansMsg)
+			_, err = b.bot.Send(ansMsg)
+			return err
+		}
 	}
+}
+
+func (b *Bot) updateGroup(firstName, lastName string, userID, chatID int64, groupName string) error {
+	facultyID := b.determineFacultyID(groupName)
+
+	err := b.studentStore.Student().Information(firstName, lastName, int(userID), groupName, facultyID)
+	if err != nil {
+		return err
+	}
+
+	ansText := fmt.Sprintf("Твоя группа обновлена на %s \U00002705\n\n", groupName)
+	ansText += b.messages.InfoWithGroup
+
+	ansMsg := tgbotapi.NewMessage(chatID, ansText)
+	ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
+
+	_, err = b.bot.Send(ansMsg)
 	return err
 }
 
@@ -295,17 +321,14 @@ func (b *Bot) determineFacultyID(groupName string) byte {
 	return 12
 }
 
-// findCommandsAmongUserMsg ...
-func findCommandsAmongUserMsg(userMsg string, commands []string) bool {
-	expr := fmt.Sprintf(`(?i)(%s)`, strings.Join(commands, "|"))
-	amongRegexp := regexp.MustCompile(expr)
-	return amongRegexp.MatchString(userMsg)
+func containsPartial(s []string, e string) bool {
+	amongRegexp := regexp.MustCompile(strings.Join(s, "|"))
+	return amongRegexp.MatchString(e)
 }
 
-// isUserMsgAmongCommands ...
-func isUserMsgAmongCommands(userMsg string, commands []string) bool {
-	for _, message := range commands {
-		if strings.EqualFold(userMsg, message) {
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if e == a {
 			return true
 		}
 	}

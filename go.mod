@@ -6,8 +6,9 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.0
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/jmoiron/sqlx v1.3.4
+	github.com/mailru/easyjson v0.7.7
 	github.com/spf13/viper v1.9.0
-	github.com/ulstu-schedule/parser v0.9.1
+	github.com/ulstu-schedule/parser v0.9.2
 )
 
 require (
@@ -26,7 +27,6 @@ require (
 	github.com/jackc/pgtype v1.9.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
-	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
