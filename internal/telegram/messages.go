@@ -80,24 +80,24 @@ func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleMsg(message *tgbotapi.Message) error {
-	userMsgLower := strings.ToLower(message.Text)
+	userMsgLowered := strings.ToLower(message.Text)
 
 	switch {
-	case contains(b.commands.Whole.GetScheduleForDay, userMsgLower):
+	case contains(b.commands.Whole.GetScheduleForDay, userMsgLowered):
 		return b.handleGetScheduleForDayMsg(message)
-	case contains(b.commands.Whole.GetScheduleForWeek, userMsgLower) ||
-		containsPartial(b.commands.Partial.GetScheduleForWeek, userMsgLower):
+	case contains(b.commands.Whole.GetScheduleForWeek, userMsgLowered) ||
+		containsPartial(b.commands.Partial.GetScheduleForWeek, userMsgLowered):
 		return b.handleGetScheduleForWeekMsg(message)
-	case contains(b.commands.Whole.ChangeGroup, userMsgLower) ||
-		containsPartial(b.commands.Partial.ChangeGroup, userMsgLower):
+	case contains(b.commands.Whole.ChangeGroup, userMsgLowered) ||
+		containsPartial(b.commands.Partial.ChangeGroup, userMsgLowered):
 		return b.handleChangeGroupMsg(message)
-	case contains(b.commands.Whole.BackToStartMenu, userMsgLower) ||
-		containsPartial(b.commands.Partial.BackToStartMenu, userMsgLower):
+	case contains(b.commands.Whole.BackToStartMenu, userMsgLowered) ||
+		containsPartial(b.commands.Partial.BackToStartMenu, userMsgLowered):
 		return b.handleBackToStartMenuMsg(message)
-	case contains(b.commands.Whole.GoToScheduleMenu, userMsgLower) ||
-		containsPartial(b.commands.Partial.GoToScheduleMenu, userMsgLower):
+	case contains(b.commands.Whole.GoToScheduleMenu, userMsgLowered) ||
+		containsPartial(b.commands.Partial.GoToScheduleMenu, userMsgLowered):
 		return b.handleGoToScheduleMenuMsg(message)
-	case containsPartial(b.commands.Partial.ExpressGratitude, userMsgLower):
+	case containsPartial(b.commands.Partial.ExpressGratitude, userMsgLowered):
 		return b.handleExpressGratitudeMsg(message)
 	default:
 		return b.handleUnknownMsg(message)
@@ -304,7 +304,6 @@ func (b *Bot) handleVoice(message *tgbotapi.Message) error {
 	return err
 }
 
-// determineFacultyID ...
 func (b *Bot) determineFacultyID(groupName string) byte {
 	for _, faculty := range b.faculties {
 		for _, group := range faculty.Groups {
