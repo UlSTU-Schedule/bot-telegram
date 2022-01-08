@@ -8,7 +8,6 @@ import (
 	"log"
 )
 
-// Bot ...
 type Bot struct {
 	bot           *tgbotapi.BotAPI
 	stickers      config.Stickers
