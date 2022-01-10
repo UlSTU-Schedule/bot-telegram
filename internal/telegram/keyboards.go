@@ -31,7 +31,7 @@ func getScheduleMenuKeyboard() tgbotapi.ReplyKeyboardMarkup {
 func getBackToMenuKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("Отмена"),
+			tgbotapi.NewKeyboardButton("Назад"),
 		),
 	)
 }
