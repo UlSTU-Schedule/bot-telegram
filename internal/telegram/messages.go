@@ -129,7 +129,7 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 				return err
 			}
 
-			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04:05 02.01.2006")
+			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04 02.01.2006")
 
 			daySchedule, err = schedule.ParseDayGroupSchedule(groupScheduleJSON.Info, updateTimeFmt, student.GroupName, loweredUserMsg)
 			if err != nil {
@@ -173,7 +173,7 @@ func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
 				return err
 			}
 
-			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04:05 02.01.2006")
+			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04 02.01.2006")
 
 			caption, weekSchedulePath, err = schedule.ParseWeekGroupSchedule(groupScheduleJSON.Info, updateTimeFmt, student.GroupName, loweredUserMsg)
 			if err != nil {
