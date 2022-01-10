@@ -99,6 +99,9 @@ func (b *Bot) handleMsg(message *tgbotapi.Message) error {
 		return b.handleGoToScheduleMenuMsg(message)
 	case containsPartial(b.commands.Partial.ExpressGratitude, userMsgLowered):
 		return b.handleExpressGratitudeMsg(message)
+	case contains(b.commands.Whole.Session, userMsgLowered) ||
+		containsPartial(b.commands.Partial.Session, userMsgLowered):
+		return b.handleSessionMsg(message)
 	default:
 		return b.handleUnknownMsg(message)
 	}
@@ -245,6 +248,14 @@ func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
 
 		_, err = b.bot.Send(ansMsg)
 	}
+	return err
+}
+
+func (b *Bot) handleSessionMsg(message *tgbotapi.Message) error {
+	ansText := b.messages.Session
+	ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
+
+	_, err := b.bot.Send(ansMsg)
 	return err
 }
 

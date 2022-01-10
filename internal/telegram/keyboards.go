@@ -22,6 +22,7 @@ func getScheduleMenuKeyboard() tgbotapi.ReplyKeyboardMarkup {
 			tgbotapi.NewKeyboardButton("Следующая неделя"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Сессия"),
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
 	)
