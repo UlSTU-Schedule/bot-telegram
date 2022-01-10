@@ -123,6 +123,9 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 	}
 
 	if student != nil {
+		ansMsg := tgbotapi.NewMessage(message.Chat.ID, "Генерирую расписание \U0000231B")
+		_, _ = b.bot.Send(ansMsg)
+
 		loweredUserMsg := strings.ToLower(message.Text)
 
 		daySchedule, err := schedule.GetDayGroupSchedule(student.GroupName, loweredUserMsg)
@@ -144,7 +147,7 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 			daySchedule += b.messages.ChangesInKEISchedule
 		}
 
-		ansMsg := tgbotapi.NewMessage(message.Chat.ID, daySchedule)
+		ansMsg = tgbotapi.NewMessage(message.Chat.ID, daySchedule)
 		ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
