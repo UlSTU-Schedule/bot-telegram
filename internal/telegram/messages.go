@@ -14,6 +14,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	case b.commands.WithSlash.AboutProject:
 		return b.handleAboutProjectCommand(message)
 	case b.commands.WithSlash.Help:
+		// TODO: при вводе /help направлять человека на inline-клавиатуру
 		return b.handleHelpCommand(message)
 	case b.commands.WithSlash.Start:
 		return b.handleStartCommand(message)
@@ -31,13 +32,13 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	if student != nil {
 		ansText := b.messages.StartWithGroup
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = getMainMenuKeyboard()
+		ansMsg.ReplyMarkup = b.mainMenuKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	} else {
 		ansText := b.messages.StartWithoutGroup
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = getEmptyKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	}
@@ -47,7 +48,6 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 func (b *Bot) handleAboutProjectCommand(message *tgbotapi.Message) error {
 	ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.AboutProject)
 	ansMsg.DisableWebPagePreview = true
-
 	_, err := b.bot.Send(ansMsg)
 	return err
 }
@@ -60,12 +60,12 @@ func (b *Bot) handleHelpCommand(message *tgbotapi.Message) error {
 
 	if student != nil {
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.InfoWithGroup)
-		ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	} else {
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.ChangeGroup)
-		ansMsg.ReplyMarkup = getEmptyKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	}
@@ -74,43 +74,47 @@ func (b *Bot) handleHelpCommand(message *tgbotapi.Message) error {
 
 func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {
 	ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.IncorrectInput)
-
 	_, err := b.bot.Send(ansMsg)
 	return err
 }
 
-func (b *Bot) handleMsg(message *tgbotapi.Message) error {
+func (b *Bot) handleTextMessage(message *tgbotapi.Message) error {
 	userMsgLowered := strings.ToLower(message.Text)
 
 	switch {
 	case contains(b.commands.Whole.GetScheduleForDay, userMsgLowered):
-		return b.handleGetScheduleForDayMsg(message)
+		fallthrough
 	case contains(b.commands.Whole.GetScheduleForWeek, userMsgLowered) ||
 		containsPartial(b.commands.Partial.GetScheduleForWeek, userMsgLowered):
-		return b.handleGetScheduleForWeekMsg(message)
+		fallthrough
 	case contains(b.commands.Whole.ChangeGroup, userMsgLowered) ||
 		containsPartial(b.commands.Partial.ChangeGroup, userMsgLowered):
-		return b.handleChangeGroupMsg(message)
+		fallthrough
 	case contains(b.commands.Whole.BackToStartMenu, userMsgLowered) ||
 		containsPartial(b.commands.Partial.BackToStartMenu, userMsgLowered):
-		return b.handleBackToStartMenuMsg(message)
+		fallthrough
 	case contains(b.commands.Whole.GoToScheduleMenu, userMsgLowered) ||
 		containsPartial(b.commands.Partial.GoToScheduleMenu, userMsgLowered):
-		return b.handleGoToScheduleMenuMsg(message)
+		return b.handleAnyTextCommand(message)
 	case containsPartial(b.commands.Partial.ExpressGratitude, userMsgLowered):
 		return b.handleExpressGratitudeMsg(message)
-	case contains(b.commands.Whole.Session, userMsgLowered) ||
-		containsPartial(b.commands.Partial.Session, userMsgLowered):
-		return b.handleSessionMsg(message)
 	default:
 		return b.handleUnknownMsg(message)
 	}
 }
 
+func (b *Bot) handleAnyTextCommand(message *tgbotapi.Message) error {
+	ansText := b.messages.RedirectToInline
+	ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
+	ansMsg.ReplyMarkup = b.emptyKeyboard()
+	_, err := b.bot.Send(ansMsg)
+	return err
+}
+
 func (b *Bot) handleChangeGroupMsg(message *tgbotapi.Message) error {
 	ansText := b.messages.ChangeGroup
 	ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-	ansMsg.ReplyMarkup = getBackToMenuKeyboard()
+	ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 	_, err := b.bot.Send(ansMsg)
 	return err
@@ -148,12 +152,12 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 		}
 
 		ansMsg = tgbotapi.NewMessage(message.Chat.ID, daySchedule)
-		ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	} else {
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.GroupNotSelected)
-		ansMsg.ReplyMarkup = getEmptyKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	}
@@ -195,13 +199,13 @@ func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
 		if (loweredUserMsg == "5" || loweredUserMsg == "текущая неделя") && schedule.IsKEIGroup(student.GroupName) {
 			imgMsg.Caption += b.messages.ChangesInKEISchedule
 		}
-		imgMsg.ReplyMarkup = getScheduleMenuKeyboard()
+		imgMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(imgMsg)
 		return err
 	} else {
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, b.messages.GroupNotSelected)
-		ansMsg.ReplyMarkup = getEmptyKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 		return err
@@ -217,13 +221,13 @@ func (b *Bot) handleBackToStartMenuMsg(message *tgbotapi.Message) error {
 	if student != nil {
 		ansText := b.messages.Back
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = getMainMenuKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	} else {
 		ansText := b.messages.ChangeGroup
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = getEmptyKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	}
@@ -240,25 +244,17 @@ func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
 		ansText := fmt.Sprintf("Твоя группа: %s \U0001F4CC\n\n", student.GroupName)
 		ansText += b.messages.InfoWithGroup
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	} else {
 		ansText := b.messages.InfoWithoutGroup
 
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = getEmptyKeyboard()
+		ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	}
-	return err
-}
-
-func (b *Bot) handleSessionMsg(message *tgbotapi.Message) error {
-	ansText := b.messages.Session
-	ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-
-	_, err := b.bot.Send(ansMsg)
 	return err
 }
 
@@ -294,7 +290,7 @@ func (b *Bot) updateGroup(firstName, lastName string, userID, chatID int64, grou
 	ansText += b.messages.InfoWithGroup
 
 	ansMsg := tgbotapi.NewMessage(chatID, ansText)
-	ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
+	ansMsg.ReplyMarkup = b.emptyKeyboard()
 
 	_, err = b.bot.Send(ansMsg)
 	return err
