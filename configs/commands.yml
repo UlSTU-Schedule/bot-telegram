@@ -26,25 +26,38 @@ without_slash:
         command: "Назад"
         data: "first_menu"
     third_lvl:
-      commands:
-        today: "Сегодня"
-        tomorrow: "Завтра"
-        curr_week: "Текущая неделя"
-        next_week: "Следующая неделя"
-        back: "Назад"
-      data:
-        groups:
-          today: "groups_schedule_today"
-          tomorrow: "groups_schedule_tomorrow"
-          curr_week: "groups_schedule_curr_week"
-          next_week: "groups_schedule_next_week"
-          back: "groups"
-        teachers:
-          today: "teachers_schedule_today"
-          tomorrow: "teachers_schedule_tomorrow"
-          curr_week: "teachers_schedule_curr_week"
-          next_week: "teachers_schedule_next_week"
-          back: "teachers"
+      groups:
+        today:
+          command: "Сегодня"
+          data: "groups_schedule_today"
+        tomorrow:
+          command: "Завтра"
+          data: "groups_schedule_tomorrow"
+        curr_week:
+          command: "Текущая неделя"
+          data: "groups_schedule_curr_week"
+        next_week:
+          command: "Текущая неделя"
+          data: "groups_schedule_next_week"
+        back:
+          command: "Назад"
+          data: "groups"
+      teachers:
+        today:
+          command: "Сегодня"
+          data: "teachers_schedule_today"
+        tomorrow:
+          command: "Завтра"
+          data: "teachers_schedule_tomorrow"
+        curr_week:
+          command: "Текущая неделя"
+          data: "teachers_schedule_curr_week"
+        next_week:
+          command: "Текущая неделя"
+          data: "teachers_schedule_next_week"
+        back:
+          command: "Назад"
+          data: "teachers"
   whole:
     go_to_schedule_menu:
       - "1"

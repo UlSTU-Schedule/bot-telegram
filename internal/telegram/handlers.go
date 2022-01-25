@@ -66,27 +66,77 @@ func (b *Bot) handleCallbackQuery(query *tgbotapi.CallbackQuery) error {
 	switch query.Data {
 	case "first_menu":
 		ansText := "Главное меню (1)"
-		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.firstLvlMenuKeyboard())
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.firstLvlMenu())
 		_, err := b.bot.Request(editedMsg)
 		return err
-	case "groups":
+	case b.commands.First.Groups.Data, b.commands.Third.Groups.Back.Data:
 		ansText := "Группы (2)"
 		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.groupsKeyboard())
 		_, err := b.bot.Request(editedMsg)
 		return err
-	case "teachers":
+	case b.commands.First.Teachers.Data, b.commands.Third.Teachers.Back.Data:
 		ansText := "Учителя (2)"
 		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.teachersKeyboard())
 		_, err := b.bot.Request(editedMsg)
 		return err
 	case "groups_schedule":
 		ansText := "Расписание групп (3)"
-		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.groupsScheduleKeyboard())
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuGroups())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case "groups_change":
+		ansText := "Изменить группу (2)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.groupsKeyboard())
 		_, err := b.bot.Request(editedMsg)
 		return err
 	case "teachers_schedule":
 		ansText := "Расписание учителей (3)"
-		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.teachersScheduleKeyboard())
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuTeachers())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case "teachers_change":
+		ansText := "Изменить учителя (2)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.teachersKeyboard())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Groups.Today.Data:
+		ansText := "Расписание групп на сегодня (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuGroups())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Groups.Tomorrow.Data:
+		ansText := "Расписание групп на завтра (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuGroups())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Groups.CurrWeek.Data:
+		ansText := "Расписание групп на текущую неделю (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuGroups())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Groups.NextWeek.Data:
+		ansText := "Расписание групп на следующую неделю (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuGroups())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Teachers.Today.Data:
+		ansText := "Расписание учителей на сегодня (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuTeachers())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Teachers.Tomorrow.Data:
+		ansText := "Расписание учителей на завтра (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuTeachers())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Teachers.CurrWeek.Data:
+		ansText := "Расписание учителей на текущую неделю (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuTeachers())
+		_, err := b.bot.Request(editedMsg)
+		return err
+	case b.commands.Third.Teachers.NextWeek.Data:
+		ansText := "Расписание учителей на следующую неделю (3)"
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuTeachers())
 		_, err := b.bot.Request(editedMsg)
 		return err
 	}

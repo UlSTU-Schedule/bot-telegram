@@ -54,21 +54,37 @@ type Partial struct {
 	ExpressGratitude   []string `mapstructure:"express_gratitude"`
 }
 
-// Inline represents inline keyboard commands and data.
+// Inline represents the inline keyboard commands and data.
 type Inline struct {
-	First FirstLvlMenu `mapstructure:"first_lvl"`
+	First FirstLvlKeyboard `mapstructure:"first_lvl"`
+	Third ThirdLvlKeyboard `mapstructure:"third_lvl"`
 }
 
-// FirstLvlMenu represents inline keyboard commands and data that are on the first level of the menu.
-type FirstLvlMenu struct {
-	Groups   FirstLvlMenuInfo `mapstructure:"groups"`
-	Teachers FirstLvlMenuInfo `mapstructure:"teachers"`
-}
-
-// FirstLvlMenuInfo represents the information that will be contained in the first-level menu button.
-type FirstLvlMenuInfo struct {
+// InlineButtonInfo represents the information that will be contained in the inline keyboard button.
+type InlineButtonInfo struct {
 	Command string `mapstructure:"command"`
 	Data    string `mapstructure:"data"`
+}
+
+// FirstLvlKeyboard represents inline keyboard commands and data that are on the first level of the keyboard.
+type FirstLvlKeyboard struct {
+	Groups   InlineButtonInfo `mapstructure:"groups"`
+	Teachers InlineButtonInfo `mapstructure:"teachers"`
+}
+
+// ThirdLvlKeyboard represents inline keyboard commands and data that are on the third level of the keyboard.
+type ThirdLvlKeyboard struct {
+	Groups   ThirdLvlKeyboardSection `mapstructure:"groups"`
+	Teachers ThirdLvlKeyboardSection `mapstructure:"teachers"`
+}
+
+// ThirdLvlKeyboardSection represents teachers or groups section of the inline keyboard.
+type ThirdLvlKeyboardSection struct {
+	Today    InlineButtonInfo `mapstructure:"today"`
+	Tomorrow InlineButtonInfo `mapstructure:"tomorrow"`
+	CurrWeek InlineButtonInfo `mapstructure:"curr_week"`
+	NextWeek InlineButtonInfo `mapstructure:"next_week"`
+	Back     InlineButtonInfo `mapstructure:"back"`
 }
 
 // WithSlash represents commands that start with a slash character.
