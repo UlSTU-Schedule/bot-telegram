@@ -25,15 +25,15 @@ type Config struct {
 
 // Commands represents the bot commands.
 type Commands struct {
-	WithoutSlash
-	WithSlash
+	WithoutSlash `mapstructure:"without_slash"`
+	WithSlash    `mapstructure:"with_slash"`
 }
 
 // WithoutSlash represents commands that do not start with a slash character.
 type WithoutSlash struct {
-	Whole
-	Partial
-	Inline
+	Inline  `mapstructure:"inline"`
+	Whole   `mapstructure:"whole"`
+	Partial `mapstructure:"partial"`
 }
 
 // Whole represents commands, which should be a whole message (е.g. msg='завтра', cmd='завтра').
@@ -54,31 +54,44 @@ type Partial struct {
 	ExpressGratitude   []string `mapstructure:"express_gratitude"`
 }
 
-// Inline represents inline keyboard commands.
+// Inline represents the inline keyboard commands and data.
 type Inline struct {
-	FirstLvl
+	First FirstLvlKeyboard `mapstructure:"first_lvl"`
+	Third ThirdLvlKeyboard `mapstructure:"third_lvl"`
 }
 
-type FirstLvl struct {
-	FirstLvlGroups
-	FirstLvlTeachers
-}
-
-type FirstLvlGroups struct {
+// InlineButtonInfo represents the information that will be contained in the inline keyboard button.
+type InlineButtonInfo struct {
 	Command string `mapstructure:"command"`
 	Data    string `mapstructure:"data"`
 }
 
-type FirstLvlTeachers struct {
-	Command string `mapstructure:"command"`
-	Data    string `mapstructure:"data"`
+// FirstLvlKeyboard represents inline keyboard commands and data that are on the first level of the keyboard.
+type FirstLvlKeyboard struct {
+	Groups   InlineButtonInfo `mapstructure:"groups"`
+	Teachers InlineButtonInfo `mapstructure:"teachers"`
+}
+
+// ThirdLvlKeyboard represents inline keyboard commands and data that are on the third level of the keyboard.
+type ThirdLvlKeyboard struct {
+	Groups   ThirdLvlKeyboardSection `mapstructure:"groups"`
+	Teachers ThirdLvlKeyboardSection `mapstructure:"teachers"`
+}
+
+// ThirdLvlKeyboardSection represents teachers or groups section of the inline keyboard.
+type ThirdLvlKeyboardSection struct {
+	Today    InlineButtonInfo `mapstructure:"today"`
+	Tomorrow InlineButtonInfo `mapstructure:"tomorrow"`
+	CurrWeek InlineButtonInfo `mapstructure:"curr_week"`
+	NextWeek InlineButtonInfo `mapstructure:"next_week"`
+	Back     InlineButtonInfo `mapstructure:"back"`
 }
 
 // WithSlash represents commands that start with a slash character.
 type WithSlash struct {
-	Start        string `mapstructure:"start"`
-	Help         string `mapstructure:"help"`
-	AboutProject string `mapstructure:"about_project"`
+	Start string `mapstructure:"start"`
+	Help  string `mapstructure:"help"`
+	About string `mapstructure:"about"`
 }
 
 // Faculty represents UlSTU faculty.
