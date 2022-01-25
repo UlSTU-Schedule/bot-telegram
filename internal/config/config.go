@@ -56,8 +56,9 @@ type Partial struct {
 
 // Inline represents the inline keyboard commands and data.
 type Inline struct {
-	First FirstLvlKeyboard `mapstructure:"first_lvl"`
-	Third ThirdLvlKeyboard `mapstructure:"third_lvl"`
+	First  FirstLvlKeyboard `mapstructure:"first_lvl"`
+	Second SecondLvlKeyboard `mapstructure:"second_lvl"`
+	Third  ThirdLvlKeyboard `mapstructure:"third_lvl"`
 }
 
 // InlineButtonInfo represents the information that will be contained in the inline keyboard button.
@@ -72,10 +73,21 @@ type FirstLvlKeyboard struct {
 	Teachers InlineButtonInfo `mapstructure:"teachers"`
 }
 
+type SecondLvlKeyboard struct {
+	Groups   SecondLvlKeyboardSection `mapstructure:"groups"`
+	Teachers SecondLvlKeyboardSection `mapstructure:"teachers"`
+	Back     InlineButtonInfo `mapstructure:"back"`
+}
+
 // ThirdLvlKeyboard represents inline keyboard commands and data that are on the third level of the keyboard.
 type ThirdLvlKeyboard struct {
 	Groups   ThirdLvlKeyboardSection `mapstructure:"groups"`
 	Teachers ThirdLvlKeyboardSection `mapstructure:"teachers"`
+}
+
+type SecondLvlKeyboardSection struct {
+	Schedule InlineButtonInfo `mapstructure:"schedule"`
+	Change InlineButtonInfo `mapstructure:"change"`
 }
 
 // ThirdLvlKeyboardSection represents teachers or groups section of the inline keyboard.
