@@ -2,11 +2,17 @@ package telegram
 
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
-func (b *Bot) mainMenuKeyboard() tgbotapi.InlineKeyboardMarkup {
+func (b *Bot) firstLvlMenuKeyboard() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Расписание групп", "groups"),
-			tgbotapi.NewInlineKeyboardButtonData("Расписание учителей", "teachers"),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Inline.First.Groups.Command,
+				b.commands.Inline.First.Groups.Data,
+			),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Inline.First.Teachers.Command,
+				b.commands.Inline.First.Teachers.Data,
+			),
 		),
 	)
 }

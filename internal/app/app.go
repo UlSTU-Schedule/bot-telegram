@@ -15,6 +15,15 @@ func Run(configPath string) {
 		log.Fatal(err)
 	}
 
+	log.Printf("inline -> first_lvl -> groups -> command: %s \n",
+		cfg.Commands.Inline.First.Groups.Command)
+	log.Printf("inline -> first_lvl -> groups -> data: %s \n",
+		cfg.Commands.Inline.First.Groups.Data)
+	log.Printf("inline -> first_lvl -> teachers -> command: %s \n",
+		cfg.Commands.Inline.First.Teachers.Command)
+	log.Printf("inline -> first_lvl -> teachers -> data: %s \n",
+		cfg.Commands.Inline.First.Teachers.Data)
+
 	studentDB, err := postgres.NewDB(cfg.StudentDatabaseURL)
 	if err != nil {
 		log.Fatal(err)

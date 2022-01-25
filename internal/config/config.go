@@ -25,15 +25,15 @@ type Config struct {
 
 // Commands represents the bot commands.
 type Commands struct {
-	WithoutSlash
-	WithSlash
+	WithoutSlash `mapstructure:"without_slash"`
+	WithSlash    `mapstructure:"with_slash"`
 }
 
 // WithoutSlash represents commands that do not start with a slash character.
 type WithoutSlash struct {
-	Whole
-	Partial
-	Inline
+	Inline  `mapstructure:"inline"`
+	Whole   `mapstructure:"whole"`
+	Partial `mapstructure:"partial"`
 }
 
 // Whole represents commands, which should be a whole message (е.g. msg='завтра', cmd='завтра').
@@ -54,31 +54,28 @@ type Partial struct {
 	ExpressGratitude   []string `mapstructure:"express_gratitude"`
 }
 
-// Inline represents inline keyboard commands.
+// Inline represents inline keyboard commands and data.
 type Inline struct {
-	FirstLvl
+	First FirstLvlMenu `mapstructure:"first_lvl"`
 }
 
-type FirstLvl struct {
-	FirstLvlGroups
-	FirstLvlTeachers
+// FirstLvlMenu represents inline keyboard commands and data that are on the first level of the menu.
+type FirstLvlMenu struct {
+	Groups   FirstLvlMenuInfo `mapstructure:"groups"`
+	Teachers FirstLvlMenuInfo `mapstructure:"teachers"`
 }
 
-type FirstLvlGroups struct {
-	Command string `mapstructure:"command"`
-	Data    string `mapstructure:"data"`
-}
-
-type FirstLvlTeachers struct {
+// FirstLvlMenuInfo represents the information that will be contained in the first-level menu button.
+type FirstLvlMenuInfo struct {
 	Command string `mapstructure:"command"`
 	Data    string `mapstructure:"data"`
 }
 
 // WithSlash represents commands that start with a slash character.
 type WithSlash struct {
-	Start        string `mapstructure:"start"`
-	Help         string `mapstructure:"help"`
-	AboutProject string `mapstructure:"about_project"`
+	Start string `mapstructure:"start"`
+	Help  string `mapstructure:"help"`
+	About string `mapstructure:"about"`
 }
 
 // Faculty represents UlSTU faculty.

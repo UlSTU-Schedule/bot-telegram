@@ -66,7 +66,7 @@ func (b *Bot) handleCallbackQuery(query *tgbotapi.CallbackQuery) error {
 	switch query.Data {
 	case "first_menu":
 		ansText := "Главное меню (1)"
-		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.mainMenuKeyboard())
+		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.firstLvlMenuKeyboard())
 		_, err := b.bot.Request(editedMsg)
 		return err
 	case "groups":

@@ -31,22 +31,20 @@ without_slash:
         tomorrow: "Завтра"
         curr_week: "Текущая неделя"
         next_week: "Следующая неделя"
+        back: "Назад"
       data:
         groups:
           today: "groups_schedule_today"
           tomorrow: "groups_schedule_tomorrow"
           curr_week: "groups_schedule_curr_week"
           next_week: "groups_schedule_next_week"
+          back: "groups"
         teachers:
           today: "teachers_schedule_today"
           tomorrow: "teachers_schedule_tomorrow"
           curr_week: "teachers_schedule_curr_week"
           next_week: "teachers_schedule_next_week"
-      back:
-        command: "Назад"
-        data:
-          groups: "groups"
-          teachers: "teachers"
+          back: "teachers"
   whole:
     go_to_schedule_menu:
       - "1"
@@ -85,4 +83,4 @@ without_slash:
 with_slash:
   start: "start"
   help: "help"
-  about_project: "about"
+  about: "about"

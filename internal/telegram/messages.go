@@ -11,7 +11,7 @@ import (
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	switch message.Command() {
-	case b.commands.WithSlash.AboutProject:
+	case b.commands.WithSlash.About:
 		return b.handleAboutProjectCommand(message)
 	case b.commands.WithSlash.Help:
 		// TODO: при вводе /help направлять человека на inline-клавиатуру
@@ -32,7 +32,7 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	if student != nil {
 		ansText := b.messages.StartWithGroup
 		ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-		ansMsg.ReplyMarkup = b.mainMenuKeyboard()
+		ansMsg.ReplyMarkup = b.firstLvlMenuKeyboard()
 
 		_, err = b.bot.Send(ansMsg)
 	} else {
