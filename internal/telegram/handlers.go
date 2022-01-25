@@ -79,22 +79,22 @@ func (b *Bot) handleCallbackQuery(query *tgbotapi.CallbackQuery) error {
 		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.teachersKeyboard())
 		_, err := b.bot.Request(editedMsg)
 		return err
-	case "groups_schedule":
+	case b.commands.Second.Groups.Schedule.Data:
 		ansText := "Расписание групп (3)"
 		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuGroups())
 		_, err := b.bot.Request(editedMsg)
 		return err
-	case "groups_change":
+	case b.commands.Second.Groups.Change.Data:
 		ansText := "Изменить группу (2)"
 		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.groupsKeyboard())
 		_, err := b.bot.Request(editedMsg)
 		return err
-	case "teachers_schedule":
+	case b.commands.Second.Teachers.Schedule.Data:
 		ansText := "Расписание учителей (3)"
 		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.thirdLvlMenuTeachers())
 		_, err := b.bot.Request(editedMsg)
 		return err
-	case "teachers_change":
+	case b.commands.Second.Teachers.Change.Data:
 		ansText := "Изменить учителя (2)"
 		editedMsg := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID, ansText, b.teachersKeyboard())
 		_, err := b.bot.Request(editedMsg)

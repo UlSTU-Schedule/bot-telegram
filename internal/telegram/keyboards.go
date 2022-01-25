@@ -20,11 +20,17 @@ func (b *Bot) firstLvlMenu() tgbotapi.InlineKeyboardMarkup {
 func (b *Bot) groupsKeyboard() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Моё расписание", "groups_schedule"),
-			tgbotapi.NewInlineKeyboardButtonData("Изменить группу", "groups_change"),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Second.Groups.Schedule.Data,
+				b.commands.Second.Groups.Schedule.Command),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Second.Groups.Change.Data,
+				b.commands.Second.Groups.Change.Command),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Назад", "first_menu"),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Second.Back.Data,
+				b.commands.Second.Back.Command),
 		),
 	)
 }
@@ -32,11 +38,17 @@ func (b *Bot) groupsKeyboard() tgbotapi.InlineKeyboardMarkup {
 func (b *Bot) teachersKeyboard() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Моё расписание", "teachers_schedule"),
-			tgbotapi.NewInlineKeyboardButtonData("Изменить учителя", "teachers_change"),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Second.Teachers.Schedule.Data,
+				b.commands.Second.Teachers.Schedule.Command),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Second.Teachers.Change.Data,
+				b.commands.Second.Teachers.Change.Command),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Назад", "first_menu"),
+			tgbotapi.NewInlineKeyboardButtonData(
+				b.commands.Second.Back.Data,
+				b.commands.Second.Back.Command),
 		),
 	)
 }
