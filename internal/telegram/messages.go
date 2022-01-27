@@ -4,6 +4,7 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/ulstu-schedule/bot-telegram/internal/schedule"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -99,9 +100,6 @@ func (b *Bot) handleMsg(message *tgbotapi.Message) error {
 		return b.handleGoToScheduleMenuMsg(message)
 	case containsPartial(b.commands.Partial.ExpressGratitude, userMsgLowered):
 		return b.handleExpressGratitudeMsg(message)
-	case contains(b.commands.Whole.Session, userMsgLowered) ||
-		containsPartial(b.commands.Partial.Session, userMsgLowered):
-		return b.handleSessionMsg(message)
 	default:
 		return b.handleUnknownMsg(message)
 	}
@@ -187,7 +185,12 @@ func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
 			}
 		}
 		if weekSchedulePath != "" {
-			defer os.Remove(weekSchedulePath)
+			defer func(path string) {
+				err = os.Remove(path)
+				if err != nil {
+					log.Printf("error occurred while removing week schedule image: %s", err.Error())
+				}
+			}(weekSchedulePath)
 		}
 
 		imgMsg := tgbotapi.NewPhoto(message.Chat.ID, tgbotapi.FilePath(weekSchedulePath))
@@ -251,14 +254,6 @@ func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
 
 		_, err = b.bot.Send(ansMsg)
 	}
-	return err
-}
-
-func (b *Bot) handleSessionMsg(message *tgbotapi.Message) error {
-	ansText := b.messages.Session
-	ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
-
-	_, err := b.bot.Send(ansMsg)
 	return err
 }
 

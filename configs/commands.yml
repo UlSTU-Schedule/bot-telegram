@@ -12,10 +12,8 @@ without_slash:
     get_schedule_for_week:
       - "5"
       - "6"
-    session:
-      - "7"
     back_to_start_menu:
-      - "8"
+      - "7"
   partial:
     go_to_schedule_menu:
       - "расписани"
@@ -36,10 +34,6 @@ without_slash:
       - "благодар"
       - "спс"
       - "thanks"
-    session:
-      - "сесси"
-      - "зачёт"
-      - "экзамен"
 with_slash:
   start: "start"
   help: "help"

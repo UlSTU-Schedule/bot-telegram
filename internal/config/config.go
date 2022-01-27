@@ -42,7 +42,6 @@ type Whole struct {
 	GetScheduleForDay  []string `mapstructure:"get_schedule_for_day"`
 	GetScheduleForWeek []string `mapstructure:"get_schedule_for_week"`
 	BackToStartMenu    []string `mapstructure:"back_to_start_menu"`
-	Session            []string `mapstructure:"session"`
 }
 
 // Partial represents commands that can be inside a message (msg='можно моё расписание?', cmd='расписание').
@@ -52,7 +51,6 @@ type Partial struct {
 	ChangeGroup        []string `mapstructure:"change_group"`
 	BackToStartMenu    []string `mapstructure:"back_to_start_menu"`
 	ExpressGratitude   []string `mapstructure:"express_gratitude"`
-	Session            []string `mapstructure:"session"`
 }
 
 // WithSlash represents commands that start with a slash character.
@@ -80,7 +78,6 @@ type Messages struct {
 	AboutProject      string `mapstructure:"about_project"`
 	IncorrectInput    string `mapstructure:"incorrect_input"`
 	GroupNotSelected  string `mapstructure:"group_not_selected"`
-	Session           string `mapstructure:"session"`
 
 	ChangesInKEISchedule string `mapstructure:"changes_in_kei_schedule"`
 
