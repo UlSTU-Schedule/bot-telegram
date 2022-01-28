@@ -45,6 +45,6 @@ func Run(configPath string) {
 		log.Fatal(err)
 	}
 
-	bot := telegram.NewBot(api, cfg.Stickers, cfg.Messages, cfg.Commands, studentStore, scheduleStore, cfg.Faculties)
+	bot := telegram.NewBot(api, cfg.Answers, cfg.Commands, studentStore, scheduleStore, cfg.Faculties)
 	bot.Start()
 }

@@ -9,16 +9,15 @@ import (
 
 type Bot struct {
 	bot           *tgbotapi.BotAPI
-	stickers      config.Stickers
-	messages      config.Messages
+	answers       config.Answers
 	commands      config.Commands
 	studentStore  *postgres.StudentStore
 	scheduleStore *postgres.ScheduleStore
 	faculties     []config.Faculty
 }
 
-func NewBot(api *tgbotapi.BotAPI, stickers config.Stickers, messages config.Messages, commands config.Commands, studentStore *postgres.StudentStore, scheduleStore *postgres.ScheduleStore, faculties []config.Faculty) *Bot {
-	return &Bot{bot: api, stickers: stickers, messages: messages, commands: commands, studentStore: studentStore, scheduleStore: scheduleStore, faculties: faculties}
+func NewBot(api *tgbotapi.BotAPI, answers config.Answers, commands config.Commands, studentStore *postgres.StudentStore, scheduleStore *postgres.ScheduleStore, faculties []config.Faculty) *Bot {
+	return &Bot{bot: api, answers: answers, commands: commands, studentStore: studentStore, scheduleStore: scheduleStore, faculties: faculties}
 }
 
 func (b *Bot) Start() {
@@ -33,4 +32,24 @@ func (b *Bot) initUpdatesChannel() tgbotapi.UpdatesChannel {
 	u.Timeout = 60
 
 	return b.bot.GetUpdatesChan(u)
+}
+
+func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
+	for update := range updates {
+		if update.Message != nil {
+			go func(message *tgbotapi.Message) {
+				err := b.handleMessage(message)
+				if err != nil {
+					b.handleMessageError(message, err)
+				}
+			}(update.Message)
+		} else if update.CallbackQuery != nil {
+			go func(query *tgbotapi.CallbackQuery) {
+				err := b.handleCallbackQuery(query)
+				if err != nil {
+					b.handleCallbackQueryError(query, err)
+				}
+			}(update.CallbackQuery)
+		}
+	}
 }
