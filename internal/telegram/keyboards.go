@@ -21,16 +21,16 @@ func (b *Bot) groupsKeyboard() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(
-				b.commands.Second.Groups.Schedule.Data,
-				b.commands.Second.Groups.Schedule.Command),
+				b.commands.Second.Groups.Schedule.Command,
+				b.commands.Second.Groups.Schedule.Data),
 			tgbotapi.NewInlineKeyboardButtonData(
-				b.commands.Second.Groups.Change.Data,
-				b.commands.Second.Groups.Change.Command),
+				b.commands.Second.Groups.Change.Command,
+				b.commands.Second.Groups.Change.Data),
 		),
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(
-				b.commands.Second.Back.Data,
-				b.commands.Second.Back.Command),
+				b.commands.Second.Back.Command,
+				b.commands.Second.Back.Data),
 		),
 	)
 }
@@ -39,16 +39,16 @@ func (b *Bot) teachersKeyboard() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(
-				b.commands.Second.Teachers.Schedule.Data,
-				b.commands.Second.Teachers.Schedule.Command),
+				b.commands.Second.Teachers.Schedule.Command,
+				b.commands.Second.Teachers.Schedule.Data),
 			tgbotapi.NewInlineKeyboardButtonData(
-				b.commands.Second.Teachers.Change.Data,
-				b.commands.Second.Teachers.Change.Command),
+				b.commands.Second.Teachers.Change.Command,
+				b.commands.Second.Teachers.Change.Data),
 		),
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(
-				b.commands.Second.Back.Data,
-				b.commands.Second.Back.Command),
+				b.commands.Second.Back.Command,
+				b.commands.Second.Back.Data),
 		),
 	)
 }
@@ -113,6 +113,10 @@ func (b *Bot) thirdLvlMenuTeachers() tgbotapi.InlineKeyboardMarkup {
 			),
 		),
 	)
+}
+
+func (b *Bot) hideInlineKeyboard() tgbotapi.InlineKeyboardMarkup {
+	return tgbotapi.NewInlineKeyboardMarkup()
 }
 
 func (b *Bot) hideReplyKeyboard() tgbotapi.ReplyKeyboardRemove {

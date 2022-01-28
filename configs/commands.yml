@@ -37,7 +37,7 @@ without_slash:
           command: "Текущая неделя"
           data: "groups_schedule_curr_week"
         next_week:
-          command: "Текущая неделя"
+          command: "Следующая неделя"
           data: "groups_schedule_next_week"
         back:
           command: "Назад"
@@ -53,46 +53,37 @@ without_slash:
           command: "Текущая неделя"
           data: "teachers_schedule_curr_week"
         next_week:
-          command: "Текущая неделя"
+          command: "Следующая неделя"
           data: "teachers_schedule_next_week"
         back:
           command: "Назад"
           data: "teachers"
-  whole:
-    go_to_schedule_menu:
-      - "1"
-    change_group:
-      - "2"
-    get_schedule_for_day:
-      - "3"
-      - "4"
-      - "сегодня"
-      - "завтра"
-    get_schedule_for_week:
-      - "5"
-      - "6"
-    back_to_start_menu:
-      - "7"
-  partial:
-    go_to_schedule_menu:
-      - "расписани"
-      - "недел"
-    get_schedule_for_week:
-      - "текущая неделя"
-      - "следующая неделя"
-    change_group:
-      - "изменить"
-      - "поменять"
-    back_to_start_menu:
-      - "отмена"
-      - "назад"
-      - "вернуться"
-    express_gratitude:
-      - "спасиб"
-      - "сенкс"
-      - "благодар"
-      - "спс"
-      - "thanks"
+  old_whole:
+    - "1"
+    - "2"
+    - "3"
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+    - "сегодня"
+    - "завтра"
+  old_partial:
+    - "расписани"
+    - "недел"
+    - "текущая неделя"
+    - "следующая неделя"
+    - "изменить"
+    - "поменять"
+    - "отмена"
+    - "назад"
+    - "вернуться"
+  express_gratitude:
+    - "спасиб"
+    - "сенкс"
+    - "благодар"
+    - "спс"
+    - "thanks"
 with_slash:
   start: "start"
   help: "help"
