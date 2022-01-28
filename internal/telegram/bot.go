@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"database/sql"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/ulstu-schedule/bot-telegram/internal/config"
 	"github.com/ulstu-schedule/bot-telegram/internal/store/postgres"
@@ -70,6 +71,12 @@ func (b *Bot) handleMessageUpdate(update *tgbotapi.Update) error {
 func (b *Bot) handleError(update *tgbotapi.Update, err error) {
 	log.Printf("[TG] @%s: %s", update.Message.From.UserName, update.Message.Text)
 	log.Printf("[TG] ERROR: %s", err)
+
+	if err == sql.ErrNoRows {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, b.messages.ScheduleIsUnavailable)
+		_, _ = b.bot.Send(msg)
+		return
+	}
 
 	switch err.(type) {
 	case *types.UnavailableScheduleError, *types.IncorrectLinkError:
