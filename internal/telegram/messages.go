@@ -128,14 +128,22 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 
 		daySchedule, err := schedule.GetDayGroupSchedule(student.GroupName, loweredUserMsg)
 		if err != nil {
-			groupScheduleJSON, err := b.scheduleStore.GroupSchedule().GetSchedule(student.GroupName)
+			scheduleDB, err := b.scheduleStore.GroupSchedule().GetSchedule(student.GroupName)
 			if err != nil {
 				return err
 			}
 
-			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04 02.01.2006")
+			var updateTimeFmt string
+			switch schedule.GetSchoolWeekIdx(loweredUserMsg) {
+			case 0:
+				updateTimeFmt = scheduleDB.FirstWeekUpdateTime.Format("15:04 02.01.2006")
+				break
+			case 1:
+				updateTimeFmt = scheduleDB.SecondWeekUpdateTime.Format("15:04 02.01.2006")
+				break
+			}
 
-			daySchedule, err = schedule.ParseDayGroupSchedule(groupScheduleJSON.Info, updateTimeFmt, student.GroupName, loweredUserMsg)
+			daySchedule, err = schedule.ParseDayGroupSchedule(scheduleDB.FullSchedule, updateTimeFmt, student.GroupName, loweredUserMsg)
 			if err != nil {
 				return err
 			}
@@ -172,14 +180,22 @@ func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
 
 		caption, weekSchedulePath, err := schedule.GetWeekGroupSchedule(student.GroupName, loweredUserMsg)
 		if err != nil {
-			groupScheduleJSON, err := b.scheduleStore.GroupSchedule().GetSchedule(student.GroupName)
+			scheduleDB, err := b.scheduleStore.GroupSchedule().GetSchedule(student.GroupName)
 			if err != nil {
 				return err
 			}
 
-			updateTimeFmt := groupScheduleJSON.UpdateTime.Format("15:04 02.01.2006")
+			var updateTimeFmt string
+			switch schedule.GetSchoolWeekIdx(loweredUserMsg) {
+			case 0:
+				updateTimeFmt = scheduleDB.FirstWeekUpdateTime.Format("15:04 02.01.2006")
+				break
+			case 1:
+				updateTimeFmt = scheduleDB.SecondWeekUpdateTime.Format("15:04 02.01.2006")
+				break
+			}
 
-			caption, weekSchedulePath, err = schedule.ParseWeekGroupSchedule(groupScheduleJSON.Info, updateTimeFmt, student.GroupName, loweredUserMsg)
+			caption, weekSchedulePath, err = schedule.ParseWeekGroupSchedule(scheduleDB.FullSchedule, updateTimeFmt, student.GroupName, loweredUserMsg)
 			if err != nil {
 				return err
 			}

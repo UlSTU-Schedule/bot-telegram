@@ -9,7 +9,7 @@ import (
 
 const (
 	studentsRepoName      = "telegram_students"
-	groupScheduleRepoName = "groups_schedule"
+	groupScheduleRepoName = "groups_schedules"
 )
 
 var (
