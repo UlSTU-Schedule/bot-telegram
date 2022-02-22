@@ -33,7 +33,7 @@ func (r *StudentRepository) GetAllStudents() ([]model.Student, error) {
 	return students, nil
 }
 
-func (r *StudentRepository) Information(firstName, lastName string, userID int, groupName string, facultyID byte) error {
+func (r *StudentRepository) Information(firstName, lastName string, userID int64, groupName string, facultyID byte) error {
 	student, err := r.GetStudent(userID)
 	if err != nil {
 		return err
@@ -47,12 +47,12 @@ func (r *StudentRepository) Information(firstName, lastName string, userID int, 
 	return nil
 }
 
-func (r *StudentRepository) AddStudent(firstName, lastName string, userID int, groupName string, facultyID byte) {
+func (r *StudentRepository) AddStudent(firstName, lastName string, userID int64, groupName string, facultyID byte) {
 	query := fmt.Sprintf("INSERT INTO %s (first_name, last_name, user_id, group_name, faculty_id) VALUES ($1, $2, $3, $4, $5)", studentsRepoName)
 	r.store.db.MustExec(query, firstName, lastName, userID, groupName, facultyID)
 }
 
-func (r *StudentRepository) GetStudent(userID int) (*model.Student, error) {
+func (r *StudentRepository) GetStudent(userID int64) (*model.Student, error) {
 	student := model.Student{}
 	query := fmt.Sprintf("SELECT * FROM %s WHERE user_id=$1", studentsRepoName)
 	err := r.store.db.Get(&student, query, userID)
@@ -68,7 +68,7 @@ func (r *StudentRepository) GetStudent(userID int) (*model.Student, error) {
 	return &student, nil
 }
 
-func (r *StudentRepository) UpdateStudent(firstName, lastName string, userID int, newGroupName string, newFacultyID byte) {
+func (r *StudentRepository) UpdateStudent(firstName, lastName string, userID int64, newGroupName string, newFacultyID byte) {
 	query := fmt.Sprintf("UPDATE %s SET first_name=$2, last_name=$3, group_name=$4, faculty_id=$5 WHERE user_id=$1", studentsRepoName)
 	r.store.db.MustExec(query, userID, firstName, lastName, newGroupName, newFacultyID)
 }

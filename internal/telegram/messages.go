@@ -24,7 +24,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
-	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(message.From.ID)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (b *Bot) handleAboutProjectCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleHelpCommand(message *tgbotapi.Message) error {
-	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(message.From.ID)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func (b *Bot) handleChangeGroupMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
-	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(message.From.ID)
 	if err != nil {
 		return err
 	}
@@ -167,7 +167,7 @@ func (b *Bot) handleGetScheduleForDayMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
-	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(message.From.ID)
 	if err != nil {
 		return err
 	}
@@ -228,7 +228,7 @@ func (b *Bot) handleGetScheduleForWeekMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleBackToStartMenuMsg(message *tgbotapi.Message) error {
-	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(message.From.ID)
 	if err != nil {
 		return err
 	}
@@ -250,7 +250,7 @@ func (b *Bot) handleBackToStartMenuMsg(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleGoToScheduleMenuMsg(message *tgbotapi.Message) error {
-	student, err := b.studentStore.Student().GetStudent(int(message.From.ID))
+	student, err := b.studentStore.Student().GetStudent(message.From.ID)
 	if err != nil {
 		return err
 	}
@@ -296,7 +296,7 @@ func (b *Bot) handleUnknownMsg(message *tgbotapi.Message) error {
 func (b *Bot) updateGroup(firstName, lastName string, userID, chatID int64, groupName string) error {
 	facultyID := b.determineFacultyID(groupName)
 
-	err := b.studentStore.Student().Information(firstName, lastName, int(userID), groupName, facultyID)
+	err := b.studentStore.Student().Information(firstName, lastName, userID, groupName, facultyID)
 	if err != nil {
 		return err
 	}

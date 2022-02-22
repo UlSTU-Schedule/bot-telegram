@@ -10,16 +10,16 @@ type StudentRepository interface {
 	GetAllStudents() ([]model.Student, error)
 
 	// Information executes AddStudent if there is no user in the table and executes UpdateStudent if there is in the table.
-	Information(firstName, lastName string, userID int, groupName string, facultyID byte) error
+	Information(firstName, lastName string, userID int64, groupName string, facultyID byte) error
 
 	// AddStudent adds the user to the database table with the bot users.
-	AddStudent(firstName, lastName string, userID int, groupName string, facultyID byte)
+	AddStudent(firstName, lastName string, userID int64, groupName string, facultyID byte)
 
 	// GetStudent returns information about the bot user.
-	GetStudent(userID int) (*model.Student, error)
+	GetStudent(userID int64) (*model.Student, error)
 
 	// UpdateStudent updates information about the bot user.
-	UpdateStudent(firstName, lastName string, userID int, newGroupName string, facultyID byte)
+	UpdateStudent(firstName, lastName string, userID int64, newGroupName string, facultyID byte)
 }
 
 // GroupScheduleRepository represents a database table with backups of group schedules.

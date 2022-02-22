@@ -8,7 +8,7 @@ import (
 // Student represents the bot user in Telegram.
 type Student struct {
 	ID        int
-	UserID    int    `db:"user_id"`
+	UserID    int64  `db:"user_id"`
 	FirstName string `db:"first_name"`
 	LastName  string `db:"last_name"`
 	GroupName string `db:"group_name"`
