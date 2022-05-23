@@ -98,6 +98,9 @@ func (b *Bot) handleMsg(message *tgbotapi.Message) error {
 	case contains(b.commands.Whole.GoToScheduleMenu, userMsgLowered) ||
 		containsPartial(b.commands.Partial.GoToScheduleMenu, userMsgLowered):
 		return b.handleGoToScheduleMenuMsg(message)
+	case contains(b.commands.Whole.Session, userMsgLowered) ||
+		containsPartial(b.commands.Partial.Session, userMsgLowered):
+		return b.handleSessionMsg(message)
 	case containsPartial(b.commands.Partial.ExpressGratitude, userMsgLowered):
 		return b.handleExpressGratitudeMsg(message)
 	default:
@@ -308,6 +311,14 @@ func (b *Bot) updateGroup(firstName, lastName string, userID, chatID int64, grou
 	ansMsg.ReplyMarkup = getScheduleMenuKeyboard()
 
 	_, err = b.bot.Send(ansMsg)
+	return err
+}
+
+func (b *Bot) handleSessionMsg(message *tgbotapi.Message) error {
+	ansText := b.messages.Session
+	ansMsg := tgbotapi.NewMessage(message.Chat.ID, ansText)
+
+	_, err := b.bot.Send(ansMsg)
 	return err
 }
 
